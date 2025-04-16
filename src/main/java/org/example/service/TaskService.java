@@ -5,117 +5,134 @@ import org.example.model.Task;
 import org.example.repository.TaskRepository;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
+
 import java.util.Optional;
 
 public class TaskService {
 
     private final TaskRepository repository;
 
-    public TaskService(TaskRepository repository){
+    public TaskService(TaskRepository repository) {
         this.repository = repository;
     }
 
     //Добавление задачи в список
-    public void createTask(String title, String description, LocalDateTime dueDate){
-        if(title == null){
-            System.out.println("Укажите название задачи, оно не может быть пустым!");
-            return;
+    public Task createTask(String title, String description, LocalDateTime dueDate) {
+        if (title == null) {
+            return null;
         }
         Task task = new Task(title, description, dueDate);
         repository.addTask(task);
-        System.out.println("Вы успешно добавили задачу!");
+        return task;
     }
 
-
-
     //Удаление задачи.
-    public void deleteTask(int id){
+    public boolean deleteTask(int id) {
         Optional<Task> taskOptional = repository.findById(id);
-        if(taskOptional.isEmpty()){
-            System.out.println("Задачи с таким id: " + id + " нет в списке!");
-            return;
+        if (taskOptional.isEmpty()) {
+            return false;
         }
         Task task = taskOptional.get();
         repository.deleteTaskForList(task.getId());
-        System.out.println("Задача с id: " + id + " была успешно удалена!");
+        return true;
     }
 
     //Метод для просмотра полей задачи.
-    public void getFieldTaskById(int id, String field){
+    public Object getFieldTaskById(int id, String field) {
         Optional<Task> taskOptional = repository.findById(id);
-        if (taskOptional.isEmpty()){
-            System.out.println("Задачи с таким id: " + id + " не существует!");
-            return;
+        if (taskOptional.isEmpty()) {
+            return null;
+        } else {
+            Task task = taskOptional.get();
+            if(field == null) {
+                return null;
+            }
+            switch (field.toLowerCase()) {
+                case "название" -> {
+                    return task.getTitle();
+                }
+                case "описание" -> {
+                    return task.getDescription();
+                }
+                case "дедлайн" -> {
+                    return task.getDueDate();
+                }
+                case "статус" -> {
+                    return task.getStatus();
+                }
+                default -> {
+                    return null;
+                }
+            }
+
         }
-        Task task = taskOptional.get();
-        switch (field.toLowerCase()){
-            case "Название" -> System.out.println(task.getTitle());
-            case "Описание" -> System.out.println(task.getDescription());
-            case "Дедлайн" -> System.out.println(task.getDueDate());
-            case "Статус" -> System.out.println(task.getStatus());
-            default -> System.out.println("Такого поля не существует!");
-        }
+
     }
 
     //Метод для редактирования задачи.
-    public void editFieldTaskById(int id, String field, String setValueField){
-        Optional <Task> taskOptional = repository.findById(id);
-        if(taskOptional.isEmpty()){
-            System.out.println("Задачи с таким id: " + id + " не существует!");
-            return;
+    public boolean editFieldTaskById(int id, String field, String setValueField) {
+        Optional<Task> taskOptional = repository.findById(id);
+        if (taskOptional.isEmpty()) {
+            return false;
         }
-        repository.updateField(id, field, setValueField);
+        if(field == null || setValueField == null) {
+            return false;
+        }
+        String fieldLowerCase  = field.toLowerCase();
+        if (fieldLowerCase.equals("статус") || fieldLowerCase.equals("дедлайн") || fieldLowerCase.equals("описание") || fieldLowerCase.equals("название")) {
+            if(fieldLowerCase.equals("дедлайн")){
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
+                    LocalDateTime actualDate = LocalDateTime.parse(setValueField, formatter);
+                    repository.updateField(id, field, actualDate.format(formatter));
+                    return true;
+                }
+                catch (Exception e){
+                    return false;
+                }
+            }
+            repository.updateField(id, field, setValueField);
+            return true;
+        } else {
+            return false;
+        }
 
-        }
+    }
 
 
-        //Метод для фильтра задачи по статусу:Сделанная/В процессе/Не начатая.
-    public void filterByStatus(Status status){
-        List <Task> result = repository.filterByStatus(status);
-        if(result.isEmpty()){
-            System.out.println("Задач с таким статусом нет");
+    //Метод для фильтра задачи по статусу:Сделанная/В процессе/Не начатая.
+    public List<Task> filterByStatus(Status status) {
+        if (repository.validStatus(status)) {
+            return Collections.emptyList();
         }
-        else {
-            repository.displayTasks(result);
-        }
+        return repository.filterByStatus(status);
     }
 
     //Метод для сортировки задачи по статусу.
+    public List<Task> sortedByStatus(Status status) {
+        if (!repository.validStatus(status)) {
+            return Collections.emptyList();
+        }
 
-    public void sortedByStatus(){
-        List <Task> result = repository.sortedByStatus();
-        if(result.isEmpty()){
-            System.out.println("Задач с таким статусом нет");
-        }
-        else {
-            repository.displayTasks(result);
-        }
+        return repository.sortedByStatus(status);
     }
 
     //Метод для сортировки задачи по дедлайну.
-
-    public void sortedByDueDate(){
-        List <Task> result = repository.sortedByDueDate();
-        repository.displayTasks(result);
-
-    }
-
-    //Метод для вывода всех задач на экран.
-
-    public void getAllTask(){
-        List <Task> allTask = repository.getAll();
-        if(allTask.isEmpty()){
-            System.out.println("Список задач пуст!");
-        }
-        repository.displayTasks(allTask);
-    }
-
-
-
+    public List<Task> sortedByDueDate() {
+        return repository.sortedByDueDate();
 
 
     }
+
+    //Метод для получения всех задач.
+    public List<Task> getAllTask() {
+        return repository.getAllTasks();
+    }
+
+}
 
 
 
