@@ -49,8 +49,7 @@ public class TaskServiceTest {
         Task created = taskService.createTask("Название", "Описание", actualDate);
         Object result = taskService.getFieldTaskById(999, "название");
         Assertions.assertNull(result);
-        String fieldValue = null;
-        Object otherResult = taskService.getFieldTaskById(created.getId(), fieldValue);
+        Object otherResult = taskService.getFieldTaskById(created.getId(), null);
         Assertions.assertNull(otherResult);
     }
 
@@ -61,10 +60,8 @@ public class TaskServiceTest {
         Task created = taskService.createTask("Название", "Описание", actualDate);
         boolean result = taskService.editFieldTaskById(999, "Описание", "Название");
         Assertions.assertFalse(result);
-        String fieldValue = null;
-        String fieldValue2 = null;
-        Assertions.assertFalse(taskService.editFieldTaskById(created.getId(), fieldValue, "bla-bla" ));
-        Assertions.assertFalse(taskService.editFieldTaskById(created.getId(), "bla-bla", fieldValue2 ));
+        Assertions.assertFalse(taskService.editFieldTaskById(created.getId(), null, "bla-bla" ));
+        Assertions.assertFalse(taskService.editFieldTaskById(created.getId(), "bla-bla", null));
         String fieldV1 = "название";
         String fieldV2 = "дедлайн";
         String fieldV3 = "описание";
@@ -79,17 +76,15 @@ public class TaskServiceTest {
 
     @Test
     void filterByStatusTest(){
-        Status status = null;
         Status status2 = Status.fromString("Я не статус!");
-        Assertions.assertEquals(Collections.emptyList(), taskService.filterByStatus(status));
+        Assertions.assertEquals(Collections.emptyList(), taskService.filterByStatus(null));
         Assertions.assertEquals(Collections.emptyList(), taskService.filterByStatus(status2));
     }
 
     @Test
     void sortedByStatusTest(){
-        Status status = null;
         Status status2 = Status.fromString("Я не статус!");
-        Assertions.assertEquals(Collections.emptyList(), taskService.filterByStatus(status));
+        Assertions.assertEquals(Collections.emptyList(), taskService.filterByStatus(null));
         Assertions.assertEquals(Collections.emptyList(), taskService.sortedByStatus(status2));
     }
 

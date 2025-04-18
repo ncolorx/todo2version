@@ -78,9 +78,6 @@ public class TaskRepository {
     // Методы для сортировки задачи по: 1) по статусу 2) по сроку выполнения.
 
     public List<Task> sortedByStatus(Status status) {
-        if(validStatus(status) == false) {
-
-        }
         int currentPriority = status.getPriority();
         return tasks.stream().sorted(Comparator.comparingInt(task -> task.getStatus().getPriority() == currentPriority ? 0 : 1)).collect(Collectors.toList());
     }
@@ -109,13 +106,6 @@ public class TaskRepository {
     }
 
 
-    //Метод для просмотра всех задач
-    public void displayTasks(List<Task> tasks) {
-        for (Task task : tasks) {
-            System.out.println("Задача: " + task.getTitle() + " | id: " + task.getId());
-            System.out.println(" статус: " + task.getStatus() + " | дедлайн: " + task.getDueDate());
-        }
-    }
 
     //Метод для поиска задачи по айди и учета null.
 
