@@ -8,11 +8,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
-
 import java.util.Optional;
 
 public class TaskService {
-
     private final TaskRepository repository;
 
     public TaskService(TaskRepository repository) {
@@ -47,7 +45,7 @@ public class TaskService {
             return null;
         } else {
             Task task = taskOptional.get();
-            if(field == null) {
+            if (field == null) {
                 return null;
             }
             switch (field.toLowerCase()) {
@@ -67,9 +65,7 @@ public class TaskService {
                     return null;
                 }
             }
-
         }
-
     }
 
     //Метод для редактирования задачи.
@@ -78,19 +74,18 @@ public class TaskService {
         if (taskOptional.isEmpty()) {
             return false;
         }
-        if(field == null || setValueField == null) {
+        if (field == null || setValueField == null) {
             return false;
         }
-        String fieldLowerCase  = field.toLowerCase();
+        String fieldLowerCase = field.toLowerCase();
         if (fieldLowerCase.equals("статус") || fieldLowerCase.equals("дедлайн") || fieldLowerCase.equals("описание") || fieldLowerCase.equals("название")) {
-            if(fieldLowerCase.equals("дедлайн")){
+            if (fieldLowerCase.equals("дедлайн")) {
                 try {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
                     LocalDateTime actualDate = LocalDateTime.parse(setValueField, formatter);
                     repository.updateField(id, field, actualDate.format(formatter));
                     return true;
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     return false;
                 }
             }
@@ -99,9 +94,7 @@ public class TaskService {
         } else {
             return false;
         }
-
     }
-
 
     //Метод для фильтра задачи по статусу:Сделанная/В процессе/Не начатая.
     public List<Task> filterByStatus(Status status) {
@@ -116,22 +109,18 @@ public class TaskService {
         if (!repository.validStatus(status)) {
             return Collections.emptyList();
         }
-
         return repository.sortedByStatus(status);
     }
 
     //Метод для сортировки задачи по дедлайну.
     public List<Task> sortedByDueDate() {
         return repository.sortedByDueDate();
-
-
     }
 
     //Метод для получения всех задач.
     public List<Task> getAllTask() {
         return repository.getAllTasks();
     }
-
 }
 
 

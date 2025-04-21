@@ -8,30 +8,21 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
         TaskRepository repository = new TaskRepository();
         TaskService service = new TaskService(repository);
         TaskController controller = new TaskController(service);
-
         Scanner scanner = new Scanner(System.in);
         System.out.println("Вас приветствует программа Todo-App");
-
         while (true) {
             System.out.println("Введите команду (add, list, edit, delete, filter, sort, field, exit)");
             String input = scanner.nextLine().trim();
-
-
             if (input.equalsIgnoreCase("add")) {
                 System.out.println("Введите название задачи");
-
                 String title = scanner.nextLine().trim();
-
                 System.out.println("Введите описание задачи");
                 String description = scanner.nextLine().trim();
-
                 System.out.println("Введите дату");
                 String dueDate = scanner.nextLine().trim();
                 try {
@@ -42,33 +33,22 @@ public class Main {
                     } else {
                         System.out.println("Название не может быть пустым, пожалуйста повторите попытку!");
                     }
-
                 } catch (Exception e) {
                     System.out.println("Ошибка! Введен неверный формат даты, необходимо ввести: yyyy.MM.dd HH:mm");
                     System.out.println("Пример: 2005.12.12 12:12");
-
                 }
-
-            }
-            //Крашится или из-за пробелла или из-за невозможности преобразовать строку в число.
-            else if (input.equalsIgnoreCase("edit")) {
+            } else if (input.equalsIgnoreCase("edit")) {
                 int idInt;
-
                 while (true) {
                     System.out.println("Введите id задачи, которую хотите редактировать");
                     String id = scanner.nextLine().trim();
-
                     try {
                         idInt = Integer.parseInt(id);
                         break;
                     } catch (NumberFormatException e) {
                         System.out.println("Необходимо ввести число, а не строку!");
-
                     }
-
                 }
-
-
                 String field;
                 while (true) {
                     System.out.println("Введите поле, которое хотите поменять.");
@@ -81,17 +61,12 @@ public class Main {
                         System.out.println("Введено неверное поле, попробуйте снова.");
                     }
                 }
-
-
-
                 String newField;
                 System.out.println("Введите само изменение поля.");
                 System.out.println("Если вводите название/описание вводите в формате строки, то есть обычными буквами");
                 System.out.println("Если вводите дедлайн, то вводите в формате yyyy.MM.dd HH:mm");
                 System.out.println("Если вводите статус, вводите inProgress, todo, done");
                 newField = scanner.nextLine().trim();
-
-
                 try {
                     if (service.editFieldTaskById(idInt, field, newField)) {
                         System.out.println("Поле у задачи было изменено успешно, используете list для проверки изменения: ");
@@ -107,8 +82,6 @@ public class Main {
             } else {
                 controller.command(input);
             }
-
         }
-
     }
 }

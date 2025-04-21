@@ -7,8 +7,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-
-
 public class Task {
     private String title;
     private String description;
@@ -22,6 +20,5 @@ public class Task {
         this.dueDate = dueDate;
         this.status = Status.Todo;
     }
-
 }
 
